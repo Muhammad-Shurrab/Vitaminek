@@ -5,12 +5,13 @@ import {
   Button,
   Typography,
 } from "@material-tailwind/react";
+import logo from "../images/Log-in.svg";
 import { Link } from "react-router-dom";
 
 export default function SignUpForm() {
   return (
-    <div className="warpper bg-[url('../images/Gym.png')]">
-      <Card className=" my-60 mx-96" color="transparent" shadow={false}>
+    <div className="warpper gap-24 flex items-center justify-center p-24 bg-[url('../images/Gym.png')]">
+      <Card className=" " color="transparent" shadow={false}>
         <Typography
           className="text-light-blue-500"
           variant="h4"
@@ -120,6 +121,12 @@ export default function SignUpForm() {
           </Typography>
         </form>
       </Card>
+
+      <img
+        src={logo}
+        className="rounded-lg bg-light-blue-900 w-[28rem] h-[32rem]"
+        alt=""
+      />
     </div>
   );
 }

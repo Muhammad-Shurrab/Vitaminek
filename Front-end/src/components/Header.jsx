@@ -4,6 +4,7 @@ import SignUpForm from "../pages/SignUp";
 import logo from "../images/logo.png";
 import LogInForm from "../pages/LogIn";
 import Categories from "../pages/Categories";
+import UserProfile from "../pages/Profile";
 import {
   Navbar,
   MobileNav,
@@ -35,10 +36,10 @@ export default function Header() {
       </Typography>
       <Typography as="li" variant="large" color="" className="p-1 font-normal">
         <Link
-          href="#"
+          to="UserProfile"
           className="flex items-center transition-colors hover:text-light-blue-500"
         >
-          Account
+          Profile
         </Link>
       </Typography>
       <Typography as="li" variant="large" color="" className="p-1 font-normal">
@@ -51,7 +52,7 @@ export default function Header() {
       </Typography>
       <Typography as="li" variant="large" color="" className="p-1 font-normal">
         <Link
-          href="#"
+          to="/ContactPage"
           className="flex items-center transition-colors hover:text-light-blue-500"
         >
           ContactUs
@@ -71,20 +72,24 @@ export default function Header() {
           <div className="flex items-center gap-4">
             <div className="mr-4 hidden lg:block">{navList}</div>
             <div className="flex items-center gap-x-1">
-              <Button
-                variant="text"
-                size="sm"
-                className="hidden lg:inline-block"
-              >
-                <Link to="/LogInForm">Log In</Link>
-              </Button>
-              <Button
-                variant=""
-                size="m"
-                className="hidden lg:inline-block   bg-light-blue-500 text-white hover:bg-white hover:text-light-blue-500 hover:border-2 hover:border-light-blue-500 transition-transform"
-              >
-                <Link to="SignUpForm">Sign Up</Link>
-              </Button>
+              <Link to="/LogInForm">
+                <Button
+                  variant="text"
+                  size="sm"
+                  className="hidden lg:inline-block"
+                >
+                  Log In
+                </Button>
+              </Link>
+              <Link to="SignUpForm">
+                <Button
+                  variant=""
+                  size="m"
+                  className="hidden lg:inline-block   bg-light-blue-500 text-white hover:bg-white hover:text-light-blue-500 hover:border-2 hover:border-light-blue-500 transition-transform"
+                >
+                  Sign Up
+                </Button>
+              </Link>
             </div>
             <IconButton
               variant="text"
