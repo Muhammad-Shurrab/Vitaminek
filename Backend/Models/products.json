@@ -1,0 +1,12 @@
+[
+  {
+    "id": "1",
+    "title": "Whey",
+    "description": "Best whey ever for gain muscles",
+    "price": "30",
+    "brand": "Supplements",
+    "category": "Photo",
+    "photo": "Eren",
+    "rating": ["4.0", "100 reviews"]
+  }
+]
