@@ -17,7 +17,7 @@ const Sponsors = () => {
   return (
     <section
       style={{
-        padding: "3rem 0",
+        padding: "3rem ",
         backgroundColor: "white",
         overflow: "hidden",
         textAlign: "center",
@@ -33,6 +33,7 @@ const Sponsors = () => {
             flexWrap: "nowrap",
             gap: "2rem",
             animation: "scroll 20s linear infinite",
+            overflow: "hidden",
           }}
         >
           {logoUrls.concat(logoUrls).map((url, index) => (

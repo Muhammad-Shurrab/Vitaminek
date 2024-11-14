@@ -2,7 +2,7 @@ import React from "react";
 import { Button, IconButton } from "@material-tailwind/react";
 import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-export function Pagination() {
+function Pagination() {
   const [active, setActive] = React.useState(1);
 
   const getItemProps = (index) => ({
@@ -22,7 +22,7 @@ export function Pagination() {
   };
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4 text-center my-0 mx-auto">
       <Button
         variant="filled"
         className="flex items-center gap-2  bg-light-blue-500"
@@ -50,3 +50,5 @@ export function Pagination() {
     </div>
   );
 }
+
+export default Pagination;

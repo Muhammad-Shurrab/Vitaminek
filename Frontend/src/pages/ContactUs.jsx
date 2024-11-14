@@ -32,26 +32,6 @@ export default function ContactPage() {
             className="rounded-lg bg-light-blue-900 w-[35rem] h-[30rem] p-4 mt-9"
           />
           <form action="#" className="flex flex-col gap-4 lg:max-w-sm">
-            <Typography
-              variant="small"
-              className="text-left !font-semibold !text-gray-600"
-            >
-              Select Options for Business Engagement
-            </Typography>
-            <div className="flex gap-4">
-              <Button
-                variant="outlined"
-                className="max-w-fit   transition-colors hover:border-2 hover:scale-110 active:scale-100 focus:scale-105 border-light-blue-500 bg-light-blue-500 text-white hover:bg-white hover:text-light-blue-500 hover:border-light-blue-500 "
-              >
-                General inquiry
-              </Button>
-              <Button
-                variant="outlined"
-                className="max-w-fit   transition-colors hover:border-2 hover:scale-110 active:scale-100 focus:scale-105 border-light-blue-500 bg-light-blue-500 text-white hover:bg-white hover:text-light-blue-500 hover:border-light-blue-500"
-              >
-                Product Support
-              </Button>
-            </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Typography

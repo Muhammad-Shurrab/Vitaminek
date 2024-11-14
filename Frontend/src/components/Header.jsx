@@ -201,13 +201,10 @@
 // }
 
 //
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo.png";
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../Features/Auth/authSlice";
-import { addToCart } from "../Features/cartSlice"; // Import the addToCart action
+import Cookies from "js-cookie"; // Import the js-cookie library
 import {
   Navbar,
   MobileNav,
@@ -215,29 +212,45 @@ import {
   Button,
   IconButton,
 } from "@material-tailwind/react";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, CircleUser } from "lucide-react";
 
 export default function Header() {
   const [openNav, setOpenNav] = React.useState(false);
-  const user = useSelector((state) => state.auth.user);
-  const isLoggedIn = !!user;
-  const dispatch = useDispatch();
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+  const [cartCount, setCartCount] = React.useState(0);
   const navigate = useNavigate();
 
-  // Select cart items from the state
-  const cartItems = useSelector((state) => state.cart.items);
-  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0); // Calculate total quantity
-
   React.useEffect(() => {
-    window.addEventListener(
-      "resize",
-      () => window.innerWidth >= 960 && setOpenNav(false)
+    const token = Cookies.get("token");
+
+    setIsLoggedIn(!!token);
+    console.log("Eren", token);
+    // Retrieve cart items from local storage
+    const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    const cartItemCount = cartItems.reduce(
+      (total, item) => total + item.quantity,
+      0
     );
+    setCartCount(cartItemCount);
+
+    // Re-check login status whenever cookies are updated
+    window.addEventListener("storage", () => {
+      const token = Cookies.get("token");
+      setIsLoggedIn(!!token);
+    });
+
+    return () => {
+      window.removeEventListener("storage", () => {});
+    };
   }, []);
 
   const handleLogout = () => {
-    dispatch(logout());
-    navigate("/");
+    Cookies.remove("token"); // Remove token on logout
+    setIsLoggedIn(false); // Update login status
+    navigate("/"); // Redirect to the homepage
+    // Trigger a custom event to force a re-check of login status
+    window.dispatchEvent(new Event("storage"));
   };
 
   const navList = (
@@ -252,18 +265,18 @@ export default function Header() {
       </Typography>
       <Typography as="li" variant="large" color="" className="p-1 font-normal">
         <Link
-          to="UserProfile"
-          className="flex items-center transition-colors hover:text-light-blue-500"
-        >
-          Profile
-        </Link>
-      </Typography>
-      <Typography as="li" variant="large" color="" className="p-1 font-normal">
-        <Link
           href="#"
           className="flex items-center transition-colors hover:text-light-blue-500"
         >
           AboutUS
+        </Link>
+      </Typography>
+      <Typography as="li" variant="large" color="" className="p-1 font-normal">
+        <Link
+          to="/articles"
+          className="flex items-center transition-colors hover:text-light-blue-500"
+        >
+          Articles
         </Link>
       </Typography>
       <Typography as="li" variant="large" color="" className="p-1 font-normal">
@@ -296,6 +309,11 @@ export default function Header() {
             <div className="flex items-center gap-x-1">
               {isLoggedIn ? (
                 <>
+                  <Link to="/userprofile">
+                    <IconButton variant="text" className="text-light-blue-500">
+                      <CircleUser />
+                    </IconButton>
+                  </Link>
                   <Link to="/cart">
                     <IconButton variant="text" className="text-light-blue-500">
                       <ShoppingCart size={24} />
@@ -303,8 +321,7 @@ export default function Header() {
                         <span className="absolute text-red-500">
                           {cartCount}
                         </span>
-                      )}{" "}
-                      {/* Display count */}
+                      )}
                     </IconButton>
                   </Link>
                   <Button
@@ -388,8 +405,7 @@ export default function Header() {
                     <ShoppingCart size={24} />
                     {cartCount > 0 && (
                       <span className="absolute text-red-500">{cartCount}</span>
-                    )}{" "}
-                    {/* Display count */}
+                    )}
                   </IconButton>
                 </Link>
                 <Button

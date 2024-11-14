@@ -34,7 +34,6 @@ const createProduct = async (req, res) => {
 
 const getProducts = async (req, res) => {
   try {
-    console.log("sharwma");
     const { category, page = 1, limit = 9 } = req.query;
     const filters = category ? { category } : {};
 

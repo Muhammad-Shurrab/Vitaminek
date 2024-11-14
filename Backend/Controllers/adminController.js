@@ -39,10 +39,18 @@ exports.getDashboardStats = async (req, res) => {
 };
 
 exports.getUsers = async (req, res) => {
+  // Check if the user making the request is an admin
+  console.log("Hashim", req.user);
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Access denied. Admins only." });
+  }
+
   try {
+    // Fetch all users, excluding sensitive fields, and sorting by creation date
     const users = await User.find()
       .select("-password -googleId")
       .sort("-createdAt");
+
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -88,9 +96,7 @@ exports.banUser = async (req, res) => {
 
 exports.getProducts = async (req, res) => {
   try {
-    const products = await Product.find()
-      .populate("traderId", "name photo")
-      .sort("-createdAt");
+    const products = await Product.find().sort("-createdAt");
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -106,5 +112,3 @@ exports.removeProduct = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-s;

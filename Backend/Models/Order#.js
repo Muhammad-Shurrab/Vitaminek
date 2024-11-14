@@ -8,35 +8,34 @@ const OrderSchema = new Schema(
       ref: "User",
       required: true,
     },
-    orderItems: {
-      name: { type: String, required: true },
-      quantity: { type: Number, required: true },
-      image: { type: String, required: true },
-      price: { type: Number, required: true },
-      product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
-    },
-
+    products: [
+      {
+        product: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+          default: 1,
+        },
+        price: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
     totalAmount: {
       type: Number,
       required: true,
     },
-
-    totalPrice: {
-      type: Number,
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "completed", "failed"],
       required: true,
-      default: 0.0,
-    },
-    taxPrice: {
-      type: Number,
-      required: true,
-      default: 0.0,
-    },
-
-    paymentResult: {
-      id: { type: String },
-      status: { type: String },
-      updated_time: { type: String },
-      email_address: { type: String },
+      default: "pending",
     },
     paymentMethod: {
       type: String,
@@ -46,6 +45,7 @@ const OrderSchema = new Schema(
     deliveryAddress: {
       street: { type: String, required: false },
       city: { type: String, required: false },
+      state: { type: String, default: "" },
       zip: { type: String, required: false },
       country: { type: String, required: false },
     },
@@ -53,24 +53,6 @@ const OrderSchema = new Schema(
       type: String,
       enum: ["processing", "shipped", "delivered", "cancelled"],
       default: "processing",
-    },
-
-    isPaid: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
-
-    isDelivered: {
-      type: Boolean,
-    },
-
-    paidAt: {
-      type: Date,
-    },
-
-    deliverAt: {
-      type: Date,
     },
   },
   { timestamps: true }

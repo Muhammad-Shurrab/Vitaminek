@@ -25,7 +25,6 @@ const ProductSchema = new Schema(
     size: [{ type: String }],
     quantities: [{ type: Number, default: 1, required: true }],
 
-    traderId: { type: Schema.Types.ObjectId, ref: "User" },
     favorites: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }

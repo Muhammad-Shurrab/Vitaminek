@@ -34,17 +34,19 @@ const UserSchema = new Schema(
       type: String,
       enum: ["user", "trader", "admin"],
       required: true,
-      default: "user", // Set default role to 'user'
+      default: "user",
     },
-    purchasedDishes: [
+    purchasedProducts: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Dish",
+        ref: "Product",
       },
-    ], // Array of references to purchased product
+    ],
   },
   { timestamps: true }
 );
 
-const User = mongoose.model("User", UserSchema);
+// Check if the model is already compiled
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
+
 module.exports = User;

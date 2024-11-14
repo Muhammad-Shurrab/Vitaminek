@@ -306,7 +306,7 @@ export default function SignUpForm() {
               }}
             />
 
-            <Select
+            {/* <Select
               name="role" // Added name attribute
               value={formData.role} // Bind to formData
               onChange={(e) => setFormData({ ...formData, role: e })}
@@ -316,7 +316,7 @@ export default function SignUpForm() {
             >
               <Option value="user">Regular User</Option>
               <Option value="trader">Trader</Option>
-            </Select>
+            </Select> */}
           </motion.div>
           <Checkbox
             className="checked:bg-light-blue-500 checked:border-light-blue-500"

@@ -1,24 +1,40 @@
-const Order = require("../models/Order");
-const Cart = require("../models/Cart");
+// controllers/orderController.js
+const Order = require("../Models/Order");
 
+// Create a new order
 exports.createOrder = async (req, res) => {
-  const userId = req.user.id;
+  try {
+    const userId = req.user?.id; // Extract the `id` from `user` object
+    const { items, bill } = req.body;
+
+    console.log("Gojo", userId, items, bill);
+
+    if (!userId || !items || items.length === 0 || !bill) {
+      return res.status(400).json({ error: "Incomplete order data" });
+    }
+
+    res
+      .status(201)
+      .json({ message: "Order created successfully", order: savedOrder });
+  } catch (error) {
+    console.error("Error creating order:", error);
+    res.status(500).json({ error: "Failed to create order" });
+  }
+};
+
+// Get orders for a specific user
+exports.getUserOrders = async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required" });
+  }
 
   try {
-    const cart = await Cart.findOne({ userId });
-    if (!cart) return res.status(404).json({ message: "Cart not found" });
-
-    const newOrder = new Order({
-      userId,
-      items: cart.items,
-      bill: cart.bill,
-    });
-
-    await newOrder.save();
-    await Cart.findByIdAndDelete(cart._id);
-
-    res.status(200).json(newOrder);
+    const orders = await Order.find({ userId }).sort({ date_added: -1 });
+    res.status(200).json(orders);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error retrieving user orders:", error);
+    res.status(500).json({ error: "Failed to retrieve orders" });
   }
 };

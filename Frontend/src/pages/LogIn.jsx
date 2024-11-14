@@ -167,7 +167,7 @@ export default function LogInForm() {
       .unwrap()
       .then(() => {
         Swal.fire("Success", "Logged in successfully!", "success");
-        navigate("/dashboard"); // Adjust the route as needed
+        navigate("/"); // Adjust the route as needed
       })
       .catch((error) => {
         Swal.fire("Error", error.message || "Login failed", "error");

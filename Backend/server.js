@@ -10,6 +10,9 @@ const ratingRoutes = require("./Routes/ratingRoutes");
 const cartRoutes = require("./Routes/cartRoutes");
 const orderRoutes = require("./Routes/orderRoutes");
 const paymentRoutes = require("./Routes/paymentRoutes");
+const articlesRoutes = require("./Routes/articlesRoutes");
+const adminRoutes = require("./Routes/adminRoutes");
+const profileRoutes = require("./Routes/profileRoutes");
 const connectDB = require("./config/db");
 connectDB(process.env.MONGO_LINK);
 app.use(express.json());
@@ -24,10 +27,14 @@ app.use(cookieParser());
 //Routes
 
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/articles", articlesRoutes);
+app.use("/api/articles", articlesRoutes);
+app.use("/api/profile", profileRoutes);
 app.use("/api/rating", ratingRoutes);
 app.use("/api/cart", cartRoutes);
-app.use("/api/order", orderRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/payment", paymentRoutes);
 
 app.listen(PORT, () => {
