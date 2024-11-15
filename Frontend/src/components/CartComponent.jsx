@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Trash } from "lucide-react"; // Import Lucide's Trash icon
+import { Trash } from "lucide-react";
+import CheckoutModal from "../pages/Checkout";
+import { motion } from "framer-motion"; // Framer Motion for animations
+import Swal from "sweetalert2"; // SweetAlert2 for user-friendly alerts
+import "sweetalert2/dist/sweetalert2.min.css";
 
 const ShoppingCart = () => {
-  const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   useEffect(() => {
-    // Load cart items from localStorage on component mount
     const storedCartItems = localStorage.getItem("cart");
     if (storedCartItems) {
       const parsedCartItems = JSON.parse(storedCartItems);
@@ -23,26 +25,6 @@ const ShoppingCart = () => {
       0
     );
     setTotalPrice(total);
-  };
-
-  const addToCart = (item) => {
-    // Check if the item is already in the cart
-    const existingItem = cartItems.find((i) => i.id === item.id);
-    if (existingItem) {
-      // If the item is already in the cart, update the quantity
-      const updatedCartItems = cartItems.map((i) =>
-        i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-      );
-      setCartItems(updatedCartItems);
-      localStorage.setItem("cart", JSON.stringify(updatedCartItems));
-      calculateTotalPrice(updatedCartItems);
-    } else {
-      // If the item is not in the cart, add it
-      const newCartItems = [...cartItems, { ...item, quantity: 1 }];
-      setCartItems(newCartItems);
-      localStorage.setItem("cart", JSON.stringify(newCartItems));
-      calculateTotalPrice(newCartItems);
-    }
   };
 
   const updateQuantity = (item, action) => {
@@ -63,7 +45,6 @@ const ShoppingCart = () => {
   };
 
   const removeFromCart = (item) => {
-    // Remove the item from the cart
     const updatedCartItems = cartItems.filter((i) => i.id !== item.id);
     setCartItems(updatedCartItems);
     localStorage.setItem("cart", JSON.stringify(updatedCartItems));
@@ -71,20 +52,25 @@ const ShoppingCart = () => {
   };
 
   const clearCart = () => {
-    // Clear the entire cart
     setCartItems([]);
     localStorage.removeItem("cart");
     setTotalPrice(0);
   };
 
-  const handleCheckout = () => {
-    // Implement your checkout logic here
-    console.log("Checkout clicked");
-  };
-
-  const handleContinueShopping = () => {
-    // Navigate to the product list or home page
-    navigate("/products");
+  const handleCheckoutClick = () => {
+    Swal.fire({
+      title: "Proceed to Checkout?",
+      text: "You will be redirected to the checkout process.",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, proceed",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setShowCheckout(true);
+      }
+    });
   };
 
   return (
@@ -149,21 +135,29 @@ const ShoppingCart = () => {
               </button>
               <button
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                onClick={handleCheckout}
+                onClick={handleCheckoutClick}
               >
                 Checkout
-              </button>
-              <button
-                className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
-                onClick={handleContinueShopping}
-              >
-                Continue Shopping
               </button>
             </div>
           </div>
         </div>
       ) : (
         <p>Your cart is empty.</p>
+      )}
+      {showCheckout && (
+        <motion.div
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -50 }}
+          className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-900 bg-opacity-50"
+        >
+          <CheckoutModal
+            cartItems={cartItems}
+            totalPrice={totalPrice}
+            onClose={() => setShowCheckout(false)}
+          />
+        </motion.div>
       )}
     </div>
   );

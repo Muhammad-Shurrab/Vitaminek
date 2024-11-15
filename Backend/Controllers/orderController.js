@@ -1,40 +1,43 @@
-// controllers/orderController.js
 const Order = require("../Models/Order");
 
-// Create a new order
+// Create Order
 exports.createOrder = async (req, res) => {
   try {
-    const userId = req.user?.id; // Extract the `id` from `user` object
-    const { items, bill } = req.body;
+    // Log the incoming request body
+    const userId = req.user.id;
+    console.log("Gojo", userId);
 
-    console.log("Gojo", userId, items, bill);
+    const { products, totalAmount, paypalPaymentId, paypalOrderId } = req.body;
 
-    if (!userId || !items || items.length === 0 || !bill) {
-      return res.status(400).json({ error: "Incomplete order data" });
+    // Check if any required fields are missing
+    if (!products || !totalAmount || !paypalPaymentId || !paypalOrderId) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
-    res
-      .status(201)
-      .json({ message: "Order created successfully", order: savedOrder });
+    const order = new Order({
+      user: userId || "Guest",
+      products: products || [],
+      totalAmount: totalAmount || 0,
+      paypalPaymentId,
+      paypalOrderId,
+    });
+
+    await order.save();
+    res.status(201).json({ message: "Order created successfully", order });
   } catch (error) {
-    console.error("Error creating order:", error);
-    res.status(500).json({ error: "Failed to create order" });
+    console.error("Error creating order:", error); // Log the error for debugging
+    res.status(500).json({ error: error.message });
   }
 };
-
-// Get orders for a specific user
+// Fetch user orders
 exports.getUserOrders = async (req, res) => {
-  const { userId } = req.params;
-
-  if (!userId) {
-    return res.status(400).json({ error: "User ID is required" });
-  }
-
   try {
-    const orders = await Order.find({ userId }).sort({ date_added: -1 });
+    const { userId } = req.params;
+    const orders = await Order.find({ user: userId }).populate(
+      "products.product"
+    );
     res.status(200).json(orders);
   } catch (error) {
-    console.error("Error retrieving user orders:", error);
-    res.status(500).json({ error: "Failed to retrieve orders" });
+    res.status(500).json({ error: error.message });
   }
 };

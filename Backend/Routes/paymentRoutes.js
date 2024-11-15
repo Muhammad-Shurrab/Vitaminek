@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const paymentController = require("../Controllers/paymentController");
+const orderController = require("../Controllers/paymentController");
 
-router.post("/pay", paymentController.processPayment);
+router.post("/", orderController.createOrder);
+router.post("/stripe/:orderId", orderController.processStripePayment);
+router.put("/:orderId/pay", orderController.updateOrderToPaid);
 
 module.exports = router;

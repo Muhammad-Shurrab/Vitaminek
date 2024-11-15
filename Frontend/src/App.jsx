@@ -3,6 +3,7 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import "react-toastify/dist/ReactToastify.css";
 import SignUpForm from "./pages/SignUp";
 import LogInForm from "./pages/LogIn";
@@ -23,13 +24,14 @@ import ArticlesPage from "./pages/Articles";
 import ArticlePage from "./pages/Article";
 import ContactPage from "./pages/ContactUs";
 import Cart from "./components/CartComponent";
-import Checkout from "./pages/Payment";
+import Checkout from "./pages/Checkout";
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
       <ToastContainer />
+
       <BrowserRouter>
         <Header />
         <Routes>
