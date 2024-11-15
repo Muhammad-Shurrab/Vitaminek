@@ -202,7 +202,7 @@
 
 //
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "../images/logo.png";
 import Cookies from "js-cookie"; // Import the js-cookie library
 import {
@@ -220,6 +220,12 @@ export default function Header() {
 
   const [cartCount, setCartCount] = React.useState(0);
   const navigate = useNavigate();
+
+  const location = useLocation(); // Get the current location
+
+  const isAdminPath = location.pathname.startsWith("/admin"); // Check if the current path starts with "/admin"
+
+  if (isAdminPath) return null;
 
   React.useEffect(() => {
     const token = Cookies.get("token");

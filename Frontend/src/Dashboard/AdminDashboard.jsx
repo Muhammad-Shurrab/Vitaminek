@@ -1,32 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, Link, Route, Routes } from "react-router-dom";
-import {
-  PieChart,
-  Users,
-  Package,
-  ShoppingCart,
-  Star,
-  X,
-  Menu,
-} from "lucide-react";
+import { useLocation, Link } from "react-router-dom";
+import { PieChart, Users, Package, ShoppingCart, X, Menu } from "lucide-react";
 import Overview from "./Overview";
-import UsersPage from "./Users"; // Renamed to avoid conflict with Users icon
+import UsersPage from "./Users";
 import Products from "./Products";
 import Orders from "./Orders";
-import Reviews from "./Reviews";
 
 const sidebarItems = [
   { name: "Overview", icon: PieChart, path: "/admin" },
   { name: "Users", icon: Users, path: "/admin/users" },
   { name: "Products", icon: Package, path: "/admin/products" },
   { name: "Orders", icon: ShoppingCart, path: "/admin/orders" },
-  { name: "Reviews", icon: Star, path: "/admin/reviews" },
 ];
 
 const AdminDashboard = () => {
-  const location = useLocation();
   const [isOpen, setIsOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,6 +32,21 @@ const AdminDashboard = () => {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const renderContent = () => {
+    switch (location.pathname) {
+      case "/admin":
+        return <Overview />;
+      case "/admin/users":
+        return <UsersPage />;
+      case "/admin/products":
+        return <Products />;
+      case "/admin/orders":
+        return <Orders />;
+      default:
+        return <div>404: Page Not Found</div>;
+    }
   };
 
   return (
@@ -94,16 +99,11 @@ const AdminDashboard = () => {
 
       <div
         className={`ml-0 md:ml-${
-          isOpen ? "64" : "20"
+          isOpen ? "24" : "20"
         } transition-all flex-grow p-6`}
       >
-        <Routes>
-          <Route path="/admin" element={<Overview />} />
-          <Route path="/admin/users" element={<UsersPage />} />
-          <Route path="/admin/products" element={<Products />} />
-          <Route path="/admin/orders" element={<Orders />} />
-          <Route path="/admin/reviews" element={<Reviews />} />
-        </Routes>
+        {/* Render content directly based on location */}
+        {renderContent()}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React from "react";
-
+import { useLocation } from "react-router-dom";
 const logoUrls = [
   "https://asset.brandfetch.io/idMs2a1TTw/idwlEFmcn_.svg?updated=1716588640146",
   "https://www.svgrepo.com/show/303248/mastercard-2-logo.svg",
@@ -14,6 +14,11 @@ const logoUrls = [
 ];
 
 const Sponsors = () => {
+  const location = useLocation(); // Get the current location
+
+  const isAdminPath = location.pathname.startsWith("/admin"); // Check if the current path starts with "/admin"
+
+  if (isAdminPath) return null;
   return (
     <section
       style={{

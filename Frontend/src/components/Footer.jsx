@@ -1,8 +1,13 @@
 import { Typography } from "@material-tailwind/react";
 import logo from "../images/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function Footer() {
+  const location = useLocation(); // Get the current location
+
+  const isAdminPath = location.pathname.startsWith("/admin"); // Check if the current path starts with "/admin"
+
+  if (isAdminPath) return null;
   return (
     <footer className="w-full bg-white p-5  border-t-2 border-light-blue-500">
       <div className="flex  flex-row flex-wrap items-center justify-center gap-y-6 gap-x-12 bg-white text-center md:justify-between">

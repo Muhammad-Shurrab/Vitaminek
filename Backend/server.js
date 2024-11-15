@@ -11,9 +11,12 @@ const cartRoutes = require("./Routes/cartRoutes");
 const orderRoutes = require("./Routes/orderRoutes");
 const configRoutes = require("./Routes/configRoutes");
 const paymentRoutes = require("./Routes/paymentRoutes");
-
+const userRoutes = require("./Routes/userRoutes");
 const articlesRoutes = require("./Routes/articlesRoutes");
 const adminRoutes = require("./Routes/adminRoutes");
+const dashUserRoutes = require("./Routes/userRoutes");
+const productDashRoutes = require("./Routes/productDashRoutes");
+const orderDashRoutes = require("./Routes/orderDashRoutes");
 const profileRoutes = require("./Routes/profileRoutes");
 const connectDB = require("./config/db");
 connectDB(process.env.MONGO_LINK);
@@ -30,6 +33,9 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/dash", dashUserRoutes);
+app.use("/api/dash/products", productDashRoutes);
+app.use("/api/dash/orders", orderDashRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/articles", articlesRoutes);
 app.use("/api/articles", articlesRoutes);
@@ -38,6 +44,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/rating", ratingRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+
 app.use("/api/payment", paymentRoutes);
 
 app.listen(PORT, () => {
