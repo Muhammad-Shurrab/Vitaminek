@@ -4,6 +4,7 @@ const {
   toggleUserStatus,
 } = require("../Controllers/userController");
 const router = express.Router();
+const isAdmin = require("../Middlewares/isAdminMiddleware");
 
 router.get("/", getAllUsers);
 router.put("/:userId/status", toggleUserStatus);

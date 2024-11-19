@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const Comment = require("./Comments"); // Ensure you are referencing the correct model
+const Comment = require("./Comment"); // Ensure you are referencing the correct model
 
 const ProductSchema = new Schema(
   {
@@ -13,7 +13,7 @@ const ProductSchema = new Schema(
     photos: [{ type: String }],
 
     comments: [
-      { type: Schema.Types.ObjectId, ref: "Comment", required: true }, // Change ref to "Comment"
+      { type: Schema.Types.ObjectId, ref: "Comments", required: true }, // Change ref to "Comment"
     ],
     ratings: [
       {

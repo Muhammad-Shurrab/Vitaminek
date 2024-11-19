@@ -1,255 +1,259 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { Heart, HeartOff, Star, Send, ThumbsUp, Flag } from "lucide-react";
 import axios from "axios";
-import {
-  Card,
-  CardBody,
-  Typography,
-  Button,
-  Textarea,
-  IconButton,
-} from "@material-tailwind/react";
-import { Heart, Share2, BookmarkPlus, MessageCircle, Star } from "lucide-react";
+
+// Helper to fetch token from cookies
+const getCookie = (name) => {
+  const cookies = document.cookie.split("; ");
+  for (let cookie of cookies) {
+    const [key, value] = cookie.split("=");
+    if (key === name) return decodeURIComponent(value);
+  }
+  return null;
+};
+
+// Axios instance
+const api = axios.create({
+  baseURL: "http://localhost:5000/api",
+  headers: {
+    Authorization: `Bearer ${getCookie("token")}`,
+  },
+});
 
 const ArticlePage = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { id } = useParams(); // Use id instead of slug
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [comment, setComment] = useState("");
-  const [rating, setRating] = useState(0);
-  const [isFavorited, setIsFavorited] = useState(false);
   const [comments, setComments] = useState([]);
-  const [currentRating, setCurrentRating] = useState(null);
+  const [commentText, setCommentText] = useState("");
+  const [rating, setRating] = useState(0);
+  const [error, setError] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  // Get user from localStorage or context
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     fetchArticle();
-    fetchComments();
-    fetchUserRating();
-  }, [id]);
+    if (user) {
+      checkIfFavorite();
+    }
+  }, [id]); // Use id instead of slug
 
   const fetchArticle = async () => {
     try {
-      setLoading(true);
-      const response = await axios.get(
-        `http://localhost:5000/api/articles/${id}`
-      );
-      setArticle(response.data.data);
+      const [articleRes, commentsRes] = await Promise.all([
+        api.get(`/articles/${id}`), // Use id instead of slug
+        api.get(`/comments/${id}`),
+      ]);
+      setArticle(articleRes.data);
+      setComments(commentsRes.data);
+      setLoading(false);
     } catch (error) {
-      console.error("Error fetching article:", error);
-    } finally {
+      setError("Failed to fetch article. Please try again later.");
       setLoading(false);
     }
   };
 
-  const fetchComments = async () => {
+  const checkIfFavorite = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/comments`, {
-        params: {
-          targetId: id,
-          type: "article",
-        },
+      const response = await api.get(`/favorites/${id}`); // Use id instead of slug
+      setIsFavorite(response.data.isFavorite);
+    } catch (error) {
+      console.error("Error checking favorite status:", error);
+    }
+  };
+
+  const toggleFavorite = async () => {
+    if (!user) {
+      setError("Please login to favorite articles.");
+      return;
+    }
+
+    try {
+      const response = isFavorite
+        ? await api.delete(`/favorites/${id}`) // Use id
+        : await api.post(`/favorites/${id}`, {});
+      setIsFavorite(response.data.isFavorite);
+    } catch (error) {
+      setError("Failed to toggle favorite.");
+    }
+  };
+
+  const submitComment = async () => {
+    if (!user) {
+      setError("Please login to comment.");
+      return;
+    }
+
+    try {
+      const response = await api.post("/comments", {
+        articleId: id, // Pass id
+        content: commentText,
       });
-      setComments(response.data);
+      setComments([response.data, ...comments]);
+      setCommentText("");
     } catch (error) {
-      console.error("Error fetching comments:", error);
+      setError("Failed to submit comment.");
     }
   };
 
-  const fetchUserRating = async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/ratings/user`,
-        {
-          params: {
-            targetId: id,
-            type: "article",
-          },
-        }
-      );
-      if (response.data) {
-        setCurrentRating(response.data.rating);
-        setRating(response.data.rating);
-      }
-    } catch (error) {
-      console.error("Error fetching user rating:", error);
+  const submitRating = async () => {
+    if (!user) {
+      setError("Please login to rate.");
+      return;
     }
-  };
 
-  const handleCommentSubmit = async (e) => {
-    e.preventDefault();
     try {
-      const response = await axios.post(`http://localhost:5000/api/comments`, {
-        text: comment,
-        targetId: id,
-        type: "article",
-      });
-      setComments([...comments, response.data]);
-      setComment("");
-    } catch (error) {
-      console.error("Error submitting comment:", error);
-    }
-  };
-
-  const handleRatingSubmit = async () => {
-    try {
-      const ratingData = {
+      await api.post("/reviews", {
+        articleId: id, // Pass id
         rating,
-        targetId: id,
-        type: "article",
-      };
-
-      if (currentRating) {
-        await axios.put(
-          `http://localhost:5000/api/ratings/${currentRating._id}`,
-          ratingData
-        );
-      } else {
-        await axios.post(`http://localhost:5000/api/ratings`, ratingData);
-      }
-
-      // Refresh article data to get updated ratings
-      fetchArticle();
-      fetchUserRating();
+      });
+      fetchArticle(); // Refresh article to reflect updated ratings
     } catch (error) {
-      console.error("Error submitting rating:", error);
+      setError("Failed to submit rating.");
     }
   };
 
-  if (loading) {
+  if (loading)
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500" />
+        Loading...
       </div>
     );
-  }
 
-  if (!article) {
-    return <div>Article not found</div>;
-  }
+  if (!article)
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        Article not found
+      </div>
+    );
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Hero Section */}
-      <div className="relative h-[60vh] mb-8 rounded-xl overflow-hidden">
-        <img
-          src={article.photo || "/placeholder-image.jpg"}
-          alt={article.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent" />
-        <div className="absolute bottom-0 left-0 p-8 text-white">
-          <Typography
-            variant="h1"
-            className="text-4xl md:text-5xl font-bold mb-4"
-          >
-            {article.title}
-          </Typography>
-          <div className="flex items-center gap-4">
-            <span className="bg-blue-500 px-3 py-1 rounded-full text-sm">
-              {article.category}
-            </span>
-            <span>{new Date(article.createdAt).toLocaleDateString()}</span>
-          </div>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      {error && (
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
+          role="alert"
+        >
+          {error}
+          <button onClick={() => setError(null)} className="float-right">
+            &times;
+          </button>
         </div>
+      )}
+
+      <div className="mb-8">
+        <div className="flex justify-between items-start">
+          <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
+          <button
+            onClick={toggleFavorite}
+            className="text-red-500 hover:text-red-600"
+          >
+            {isFavorite ? (
+              <Heart className="fill-current" size={24} />
+            ) : (
+              <HeartOff size={24} />
+            )}
+          </button>
+        </div>
+
+        <img
+          src={article.coverImage}
+          alt={article.title}
+          className="w-full h-96 object-cover rounded-lg mb-6"
+        />
+
+        <div className="flex items-center gap-4 mb-6">
+          <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+            {article.category}
+          </span>
+          <span className="text-gray-500">
+            {new Date(article.createdAt).toLocaleDateString()}
+          </span>
+        </div>
+
+        <div className="prose max-w-none">{article.content}</div>
       </div>
 
-      {/* Article Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          <Card className="mb-8">
-            <CardBody>
-              <Typography className="prose max-w-none">
-                {article.content}
-              </Typography>
-            </CardBody>
-          </Card>
+      {/* Rating Section */}
+      <div className="mb-8">
+        <h3 className="text-2xl font-semibold mb-4">Rate this article</h3>
+        <div className="flex items-center gap-2 mb-4">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              onClick={() => setRating(star)}
+              className={`${
+                rating >= star ? "text-yellow-400" : "text-gray-300"
+              }`}
+            >
+              <Star
+                className={rating >= star ? "fill-current" : ""}
+                size={24}
+              />
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={submitRating}
+          disabled={!rating}
+          className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-300"
+        >
+          Submit Rating
+        </button>
+      </div>
 
-          {/* Comments Section */}
-          <Card>
-            <CardBody>
-              <Typography variant="h4" className="mb-4">
-                Comments
-              </Typography>
-              <form onSubmit={handleCommentSubmit} className="mb-6">
-                <Textarea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Add a comment..."
-                  className="mb-2"
-                />
-                <Button type="submit">Post Comment</Button>
-              </form>
-              <div className="space-y-4">
-                {comments.map((comment) => (
-                  <Card key={comment._id} className="bg-gray-50">
-                    <CardBody>
-                      <div className="flex items-center gap-2 mb-2">
-                        {comment.photo && (
-                          <img
-                            src={comment.photo}
-                            alt="User"
-                            className="w-8 h-8 rounded-full"
-                          />
-                        )}
-                        <Typography variant="h6">
-                          {comment.userId?.name}
-                        </Typography>
-                      </div>
-                      <Typography>{comment.text}</Typography>
-                      <Typography variant="small" color="gray" className="mt-2">
-                        {new Date(comment.createdAt).toLocaleDateString()}
-                      </Typography>
-                    </CardBody>
-                  </Card>
-                ))}
-              </div>
-            </CardBody>
-          </Card>
+      {/* Comments Section */}
+      <div>
+        <h3 className="text-2xl font-semibold mb-4">Comments</h3>
+        <div className="mb-6">
+          <textarea
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            placeholder="Write your comment..."
+            className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            rows="3"
+          />
+          <button
+            onClick={submitComment}
+            disabled={!commentText.trim()}
+            className="mt-2 bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2 disabled:bg-gray-300"
+          >
+            <Send size={16} />
+            Submit Comment
+          </button>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Rating Section */}
-          <Card>
-            <CardBody>
-              <Typography variant="h5" className="mb-4">
-                Rate this article
-              </Typography>
-              <div className="flex items-center gap-2 mb-4">
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <Star
-                    key={value}
-                    className={`cursor-pointer ${
-                      value <= rating ? "fill-yellow-500 stroke-yellow-500" : ""
-                    }`}
-                    onClick={() => setRating(value)}
-                  />
-                ))}
-              </div>
-              <Button onClick={handleRatingSubmit} fullWidth>
-                {currentRating ? "Update Rating" : "Submit Rating"}
-              </Button>
-            </CardBody>
-          </Card>
-
-          {/* Author Info */}
-          <Card>
-            <CardBody>
-              <Typography variant="h5" className="mb-4">
-                About the Author
-              </Typography>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 bg-blue-500 rounded-full" />
-                <div>
-                  <Typography variant="h6">{article.author?.name}</Typography>
-                  <Typography variant="small" color="gray">
-                    Author
-                  </Typography>
+        <div className="space-y-4">
+          {comments.length ? (
+            comments.map((comment) => (
+              <div key={comment._id} className="border-b pb-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-sm text-gray-500">
+                      {comment.user.name} •{" "}
+                      {new Date(comment.createdAt).toLocaleDateString()}
+                    </p>
+                    <p className="mt-1">{comment.content}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="text-blue-500 hover:text-blue-600">
+                      <ThumbsUp size={16} />
+                    </button>
+                    <button className="text-red-500 hover:text-red-600">
+                      <Flag size={16} />
+                    </button>
+                  </div>
                 </div>
               </div>
-            </CardBody>
-          </Card>
+            ))
+          ) : (
+            <p className="text-gray-500">
+              No comments yet. Be the first to comment!
+            </p>
+          )}
         </div>
       </div>
     </div>

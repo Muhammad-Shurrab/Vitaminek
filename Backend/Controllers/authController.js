@@ -55,6 +55,10 @@ const loginUser = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not Found" });
 
     const validPassword = await bcrypt.compare(password, user.password);
+    // Add this check
+    if (!validPassword) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
 
     const token = jwt.sign(
       { id: user._id, role: user.role },
@@ -74,10 +78,51 @@ const loginUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+const googleLogin = async (req, res) => {
+  try {
+    const { email, name, googleId, photo } = req.body;
 
+    // Check if user exists
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if doesn't exist
+      user = new User({
+        email,
+        name,
+        googleId,
+        photo,
+        role: "user", // Default role for Google login users
+        password: undefined, // Password not required for Google login
+      });
+      await user.save();
+    }
+
+    // Create JWT token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    // Set cookie
+    res.cookie("token", token, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 3600000,
+    });
+
+    // Send response
+    res.status(200).json({ role: user.role, userId: user._id });
+  } catch (err) {
+    console.error("Google login error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 const logoutUser = (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ message: "Logged Out Successfully" });
 };
 
-module.exports = { registerUser, loginUser, logoutUser };
+module.exports = { registerUser, loginUser, logoutUser, googleLogin };

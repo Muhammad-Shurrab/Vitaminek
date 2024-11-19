@@ -1,177 +1,3 @@
-// import {
-//   Card,
-//   Input,
-//   Checkbox,
-//   Button,
-//   Typography,
-//   Select,
-//   Option,
-// } from "@material-tailwind/react";
-// import logo from "../images/Log-in.svg";
-// import { Link } from "react-router-dom";
-// import { useDispatch, useSelector } from "react-redux";
-// import { useNavigate } from "react-router-dom";
-// import { useState } from "react";
-// import { registerUser } from "../Features/Auth/authSlice";
-// export default function SignUpForm() {
-//   const dispatch = useDispatch();
-//   const navigate = useNavigate();
-
-//   const [formData, setFormData] = useState({
-//     nam: "",
-//     email: "",
-//     password: "",
-//     role: "user",
-//   });
-
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
-//   };
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     dispatch(registerUser);
-//   };
-
-//   return (
-//     <div className="warpper gap-24 flex items-center justify-center p-24 bg-[url('../images/Gym.png')]">
-//       <Card className=" " color="transparent" shadow={false}>
-//         <Typography
-//           className="text-light-blue-500"
-//           variant="h4"
-//           color="blue-gray"
-//         >
-//           Sign Up
-//         </Typography>
-//         <Typography color="gray" className="mt-1 font-normal">
-//           Nice to meet you! Enter your details to register.
-//         </Typography>
-//         <form
-//           onSubmit={handleSubmit}
-//           className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
-//         >
-//           <div className="mb-1 flex flex-col gap-6">
-//             <Typography
-//               variant="h6"
-//               color="blue-gray"
-//               className="-mb-3 text-light-blue-500"
-//             >
-//               Your Name
-//             </Typography>
-//             <Input
-//               onChange={handleChange}
-//               size="lg"
-//               placeholder="name@mail.com"
-//               className=" !border-t-blue-gray-200 transition-colors focus:!border-light-blue-500"
-//               labelProps={{
-//                 className: "before:content-none after:content-none",
-//               }}
-//             />
-//             <Typography
-//               variant="h6"
-//               color="blue-gray"
-//               className="-mb-3 text-light-blue-500"
-//             >
-//               Your Email
-//             </Typography>
-//             <Input
-//               onChange={handleChange}
-//               size="lg"
-//               placeholder="name@mail.com"
-//               className=" !border-t-blue-gray-200 transition-colors focus:!border-light-blue-500"
-//               labelProps={{
-//                 className: "before:content-none after:content-none",
-//               }}
-//             />
-//             <Typography
-//               variant="h6"
-//               color="blue-gray"
-//               className="-mb-3 text-light-blue-500"
-//             >
-//               Password
-//             </Typography>
-//             <Input
-//               type="password"
-//               onChange={handleChange}
-//               size="lg"
-//               placeholder="********"
-//               className=" !border-t-blue-gray-200 transition-colors focus:!border-light-blue-500"
-//               labelProps={{
-//                 className: "before:content-none after:content-none",
-//               }}
-//             />
-
-//             <Select
-//               onChange={handleChange}
-//               color="blue"
-//               variant="outlined"
-//               label="Sign-Up as:"
-//             >
-//               <Option value="user">Regular User</Option>
-//               <Option value="trader">Trader</Option>
-//             </Select>
-//           </div>
-//           <Checkbox
-//             className="checked:bg-light-blue-500 checked:border-light-blue-500"
-//             label={
-//               <Typography
-//                 variant="small"
-//                 color="grey"
-//                 className="flex items-center font-normal"
-//               >
-//                 I agree the
-//                 <Link
-//                   href="#"
-//                   className="font-medium transition-colors hover:text-light-blue-500"
-//                 >
-//                   &nbsp;Terms and Conditions
-//                 </Link>
-//               </Typography>
-//             }
-//             containerProps={{ className: "-ml-2.5" }}
-//           />
-
-//           {/* <Button
-//             variant="outlined"
-//             size="lg"
-//             className="flex h-12 border-blue-gray-200 items-center justify-center gap-2"
-//             fullWidth
-//           >
-//             <img
-//               src={`https://www.material-tailwind.com/logos/logo-google.png`}
-//               alt="google"
-//               className="h-6 w-6"
-//             />{" "}
-//             sign up with google
-//           </Button> */}
-//           <Button
-//             className="mt-6  text-base  transition-colors hover:border-2 hover:scale-110 active:scale-100 focus:scale-105 border-light-blue-500 bg-light-blue-500 text-white hover:bg-white hover:text-light-blue-500 hover:border-light-blue-500"
-//             fullWidth
-//           >
-//             sign up
-//           </Button>
-//           <Typography color="gray" className="mt-4 text-center font-normal">
-//             Already have an account?{" "}
-//             <Link
-//               to="/LogInForm"
-//               className="font-medium text-gray-900 transition-colors border-light-blue-500 hover:text-light-blue-500"
-//             >
-//               Sign In
-//             </Link>
-//           </Typography>
-//         </form>
-//       </Card>
-
-//       <img
-//         src={logo}
-//         className="rounded-lg bg-light-blue-900 w-[28rem] h-[32rem]"
-//         alt=""
-//       />
-//     </div>
-//   );
-// }
-
-//
 import {
   Card,
   Input,
@@ -224,25 +50,32 @@ export default function SignUpForm() {
 
   return (
     <motion.div
-      className="warpper gap-24 flex items-center justify-center p-24 bg-[url('../images/Gym.png')]"
+      className="warpper flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-24 p-6 sm:p-12 bg-[url('../images/Gym.png')] bg-cover bg-center min-h-screen"
       initial={{ opacity: 0, y: 50 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className=" " color="transparent" shadow={false}>
+      <Card
+        className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg"
+        color="transparent"
+        shadow={false}
+      >
         <Typography
-          className="text-light-blue-500"
+          className="text-light-blue-500 text-center"
           variant="h4"
           color="blue-gray"
         >
           Sign Up
         </Typography>
-        <Typography color="gray" className="mt-1 font-normal">
+        <Typography
+          color="gray"
+          className="mt-1 font-normal text-center text-sm sm:text-base"
+        >
           Nice to meet you! Enter your details to register.
         </Typography>
         <form
           onSubmit={handleSubmit}
-          className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
+          className="mt-8 mb-2 w-full max-w-xs sm:max-w-sm md:max-w-md"
         >
           <motion.div
             className="mb-1 flex flex-col gap-6"
@@ -258,8 +91,8 @@ export default function SignUpForm() {
               Your Name
             </Typography>
             <Input
-              name="name" // Added name attribute
-              value={formData.name} // Bind to formData
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               size="lg"
               placeholder="John Doe"
@@ -276,8 +109,8 @@ export default function SignUpForm() {
               Your Email
             </Typography>
             <Input
-              name="email" // Added name attribute
-              value={formData.email} // Bind to formData
+              name="email"
+              value={formData.email}
               onChange={handleChange}
               size="lg"
               placeholder="name@mail.com"
@@ -294,8 +127,8 @@ export default function SignUpForm() {
               Password
             </Typography>
             <Input
-              name="password" // Added name attribute
-              value={formData.password} // Bind to formData
+              name="password"
+              value={formData.password}
               type="password"
               onChange={handleChange}
               size="lg"
@@ -305,18 +138,6 @@ export default function SignUpForm() {
                 className: "before:content-none after:content-none",
               }}
             />
-
-            {/* <Select
-              name="role" // Added name attribute
-              value={formData.role} // Bind to formData
-              onChange={(e) => setFormData({ ...formData, role: e })}
-              color="blue"
-              variant="outlined"
-              label="Sign-Up as:"
-            >
-              <Option value="user">Regular User</Option>
-              <Option value="trader">Trader</Option>
-            </Select> */}
           </motion.div>
           <Checkbox
             className="checked:bg-light-blue-500 checked:border-light-blue-500"
@@ -339,14 +160,17 @@ export default function SignUpForm() {
           />
           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
             <Button
-              type="submit" // Added type submit for form handling
+              type="submit"
               className="mt-6 text-base transition-colors hover:border-2 border-light-blue-500 bg-light-blue-500 text-white hover:bg-white hover:text-light-blue-500"
               fullWidth
             >
               Sign up
             </Button>
           </motion.div>
-          <Typography color="gray" className="mt-4 text-center font-normal">
+          <Typography
+            color="gray"
+            className="mt-4 text-center text-sm sm:text-base font-normal"
+          >
             Already have an account?{" "}
             <Link
               to="/LogIn"
@@ -360,7 +184,7 @@ export default function SignUpForm() {
 
       <motion.img
         src={logo}
-        className="rounded-lg bg-light-blue-900 w-[28rem] h-[32rem]"
+        className="rounded-lg bg-light-blue-900 w-full max-w-sm sm:max-w-md lg:max-w-[28rem] h-auto lg:h-[32rem]"
         alt=""
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import "./firebase";
 // Importing Pages and Components
 import Home from "./pages/Home";
 import SignUpForm from "./pages/SignUp";

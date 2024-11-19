@@ -1,258 +1,132 @@
+// controllers/articleController.js
 const Article = require("../Models/Articles");
+const User = require("../Models/User");
 
-const Comment = require("../Models/Comments");
-
-exports.getArticles = async (req, res) => {
+exports.getAllArticles = async (req, res) => {
   try {
-    const { category, search, page = 1, limit = 8 } = req.query;
-    const query = {};
-
-    // Add category filter if provided
-    if (category) {
-      query.category = category;
-    }
-
-    // Add search filter if provided
-    if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { content: { $regex: search, $options: "i" } },
-      ];
-    }
-
-    // Only show published articles
-    query.status = "published";
-
-    const articles = await Article.find(query)
+    const articles = await Article.find({ status: "published" })
       .populate("author", "name")
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+      .sort("-createdAt");
 
-    const total = await Article.countDocuments(query);
-
-    res.json({
-      articles,
-      totalPages: Math.ceil(total / limit),
-      currentPage: page,
-    });
+    res.status(200).json(articles);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching articles", error: error.message });
   }
 };
 
-// Get single article
-exports.getArticle = async (req, res) => {
+exports.getArticleById = async (req, res) => {
   try {
-    const article = await Article.findById(req.params.id);
+    const article = await Article.findById(req.params.id)
+      .populate("author", "name") // Populate author details if necessary
+      .exec();
 
     if (!article) {
-      return res.status(404).json({
-        success: false,
-        error: "Article not found",
-      });
+      return res.status(404).json({ message: "Article not found" });
     }
 
-    res.status(200).json({
-      success: true,
-      data: article,
-    });
+    res.status(200).json(article);
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
+    console.error(error);
+    res.status(500).json({ message: "Error fetching article" });
   }
 };
-
-// Create new article
-
 exports.createArticle = async (req, res) => {
   try {
-    const article = await Article.create(req.body);
+    const { title, content, category, tags, coverImage } = req.body;
 
-    res.status(201).json({
-      success: true,
-      data: article,
+    // Create slug from title
+    const slug = title
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-");
+
+    const article = new Article({
+      title,
+      content,
+      category,
+      tags,
+      coverImage,
+      slug,
+      author: req.user._id, // Assuming you have user auth middleware
+      status: "published",
     });
-    console.log("Articles");
+
+    await article.save();
+    res.status(201).json(article);
   } catch (error) {
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((err) => err.message);
-      return res.status(400).json({
-        success: false,
-        error: messages,
-      });
-    }
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
+    res
+      .status(500)
+      .json({ message: "Error creating article", error: error.message });
   }
 };
 
-// Update article
-exports.updateArticle = async (req, res) => {
+exports.toggleFavorite = async (req, res) => {
   try {
-    const article = await Article.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const { articleId } = req.body;
+    const userId = req.user._id; // Assuming you have user auth middleware
 
-    if (!article) {
-      return res.status(404).json({
-        success: false,
-        error: "Article not found",
-      });
-    }
+    const user = await User.findById(userId);
+    const favoriteIndex = user.favorites.indexOf(articleId);
 
-    res.status(200).json({
-      success: true,
-      data: article,
-    });
-  } catch (error) {
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((err) => err.message);
-      return res.status(400).json({
-        success: false,
-        error: messages,
-      });
-    }
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
-  }
-};
-
-// Delete article
-exports.deleteArticle = async (req, res) => {
-  try {
-    const article = await Article.findByIdAndDelete(req.params.id);
-
-    if (!article) {
-      return res.status(404).json({
-        success: false,
-        error: "Article not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: {},
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
-  }
-};
-
-exports.getArticleComments = async (req, res) => {
-  try {
-    const comments = await Comment.find({
-      targetId: req.params.id,
-      type: "article",
-    })
-      .populate("userId", "name photo")
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      data: comments,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
-  }
-};
-
-// Add comment to article
-exports.addComment = async (req, res) => {
-  try {
-    const comment = await Comment.create({
-      userId: req.user._id, // Assuming you have user info in req.user from auth middleware
-      text: req.body.text,
-      type: "article",
-      targetId: req.params.id,
-    });
-
-    const populatedComment = await Comment.findById(comment._id).populate(
-      "userId",
-      "name photo"
-    );
-
-    res.status(201).json({
-      success: true,
-      data: populatedComment,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
-  }
-};
-
-// Get user's rating for an article
-exports.getUserRating = async (req, res) => {
-  try {
-    const rating = await Rating.findOne({
-      userId: req.user._id,
-      targetId: req.params.id,
-      type: "article",
-    });
-
-    res.status(200).json({
-      success: true,
-      data: rating,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
-  }
-};
-
-// Add or update rating
-exports.handleRating = async (req, res) => {
-  try {
-    const { rating } = req.body;
-
-    const existingRating = await Rating.findOne({
-      userId: req.user._id,
-      targetId: req.params.id,
-      type: "article",
-    });
-
-    if (existingRating) {
-      existingRating.rating = rating;
-      await existingRating.save();
-      res.status(200).json({
-        success: true,
-        data: existingRating,
-      });
+    if (favoriteIndex === -1) {
+      user.favorites.push(articleId);
     } else {
-      const newRating = await Rating.create({
-        userId: req.user._id,
-        rating,
-        type: "article",
-        targetId: req.params.id,
-      });
+      user.favorites.splice(favoriteIndex, 1);
+    }
 
-      res.status(201).json({
-        success: true,
-        data: newRating,
-      });
+    await user.save();
+    res.status(200).json({ message: "Favorite toggled successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error toggling favorite", error: error.message });
+  }
+};
+
+exports.toggleFavorite = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const userId = req.user.id;
+
+    const article = await Article.findOne({ slug });
+    if (!article) {
+      return res.status(404).json({ message: "Article not found" });
+    }
+
+    const user = await User.findById(userId);
+    const favoriteIndex = user.favorites.indexOf(article._id);
+
+    if (favoriteIndex > -1) {
+      user.favorites.splice(favoriteIndex, 1);
+      await user.save();
+      res.json({ isFavorite: false });
+    } else {
+      user.favorites.push(article._id);
+      await user.save();
+      res.json({ isFavorite: true });
     }
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: "Server Error",
-    });
+    res.status(500).json({ message: "Error toggling favorite", error });
+  }
+};
+
+exports.checkFavorite = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const userId = req.user.id;
+
+    const article = await Article.findOne({ slug });
+    if (!article) {
+      return res.status(404).json({ message: "Article not found" });
+    }
+
+    const user = await User.findById(userId);
+    const isFavorite = user.favorites.includes(article._id);
+
+    res.json({ isFavorite });
+  } catch (error) {
+    res.status(500).json({ message: "Error checking favorite status", error });
   }
 };

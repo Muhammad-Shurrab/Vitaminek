@@ -20,6 +20,12 @@ const UserSchema = new Schema(
     },
     photo: { type: String, default: "eren" },
     wallet: { type: Number, default: 0 },
+    favorites: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Article",
+      },
+    ],
     isBanned: { type: Boolean, default: false },
     address: {
       street: { type: String, default: "" },
@@ -30,6 +36,7 @@ const UserSchema = new Schema(
     },
     phoneNumber: { type: String, default: "" },
     googleId: { type: String, default: "" },
+
     role: {
       type: String,
       enum: ["user", "trader", "admin"],

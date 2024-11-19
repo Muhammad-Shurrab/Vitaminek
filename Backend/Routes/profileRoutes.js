@@ -1,20 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const auth = require("../Middlewares/authMiddleware");
-const upload = require("../config/multer");
-const {
-  getUserProfile,
-  updateProfile,
-  updatePassword,
-} = require("../Controllers/profileController");
+const profileController = require("../controllers/profileController");
+const verifyToken = require("../Middlewares/authMiddleware"); // You'll need to implement this
 
-// Get user profile
-router.get("/me", auth, getUserProfile);
+// Apply auth middleware to all routes
 
-// Update profile
-router.put("/update", auth, upload.single("photo"), updateProfile);
-
-// Update password
-router.put("/update-password", auth, updatePassword);
+// Profile routes
+router.get("/", verifyToken, profileController.getProfile);
+router.patch("/", verifyToken, profileController.updateProfile);
+router.get("/articles", verifyToken, profileController.getArticleDashboard);
+router.get("/orders", verifyToken, profileController.getOrderHistory);
 
 module.exports = router;

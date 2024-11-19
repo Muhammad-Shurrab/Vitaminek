@@ -5,7 +5,7 @@ exports.getPendingOrders = async (req, res) => {
   try {
     const pendingOrders = await Order.find({ paymentStatus: "Pending" })
       .populate("user", "name email") // Populate user details
-      .populate("products.product", "name price"); // Populate product details
+      .populate("products.product", "title price"); // Populate product details
     res.status(200).json(pendingOrders);
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch pending orders.", error });

@@ -16,9 +16,9 @@ exports.createProduct = async (req, res) => {
 // Get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find()
-      .populate("comments")
-      .populate("ratings");
+    const products = await Product.find();
+
+    console.log("P", products);
     res.status(200).json({ data: products });
   } catch (err) {
     res.status(500).json({ error: err.message });

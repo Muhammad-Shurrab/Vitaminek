@@ -1,17 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const articleController = require("../Controllers/articlesController");
-const auth = require("../Middlewares/authMiddleware");
-router.get("/", articleController.getArticles);
-router.get("/:id", articleController.getArticle);
-router.post("/", articleController.createArticle);
-router.put("/:id", articleController.updateArticle);
+const verifyToken = require("../Middlewares/authMiddleware");
 
-router.delete("/:id", articleController.deleteArticle);
+// Public routes
+router.get("/", articleController.getAllArticles);
+router.get("/:id", articleController.getArticleById); // Change from slug to id
 
-router.get("/:id/comments", articleController.getArticleComments);
-router.post("/:id/comments", auth, articleController.addComment);
-router.get("/:id/rating", auth, articleController.getUserRating);
-router.post("/:id/rating", auth, articleController.handleRating);
+// Protected routes
+router.post("/articles", articleController.createArticle);
+router.post("/favorites/:id", articleController.toggleFavorite);
+router.delete("/favorites/:id", articleController.toggleFavorite);
+router.get("/favorites/:id", articleController.checkFavorite);
 
 module.exports = router;

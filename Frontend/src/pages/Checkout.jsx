@@ -14,6 +14,7 @@ const Checkout = ({ cartItems, totalPrice, onClose }) => {
       const orderData = {
         products: cartItems.map((item) => ({
           product: item.id,
+          title: item.title,
           quantity: item.quantity,
           price: item.price,
         })),

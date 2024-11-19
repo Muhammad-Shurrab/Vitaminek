@@ -211,7 +211,7 @@ const Home = () => {
 
         // Fetch featured articles
         const articlesResponse = await axios.get(
-          "http://localhost:5000/api/articles",
+          "http://localhost:5000/api/articles/",
           {
             params: {
               featured: true,
@@ -220,7 +220,7 @@ const Home = () => {
           }
         );
         console.log("Articles:", articlesResponse.data.articles);
-        setArticles(articlesResponse.data.articles);
+        setArticles(articlesResponse.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {

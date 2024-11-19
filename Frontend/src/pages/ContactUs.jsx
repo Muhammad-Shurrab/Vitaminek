@@ -32,49 +32,26 @@ export default function ContactPage() {
             className="rounded-lg bg-light-blue-900 w-[35rem] h-[30rem] p-4 mt-9"
           />
           <form action="#" className="flex flex-col gap-4 lg:max-w-sm">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Typography
-                  variant="small"
-                  className="mb-2 text-left font-medium !text-light-blue-500"
-                >
-                  First Name
-                </Typography>
-                <Input
-                  color="blue"
-                  size="lg"
-                  placeholder="First Name"
-                  name="first-name"
-                  className="focus:border-t-light-blue-500"
-                  containerProps={{
-                    className: "min-w-full",
-                  }}
-                  labelProps={{
-                    className: "hidden",
-                  }}
-                />
-              </div>
-              <div>
-                <Typography
-                  variant="small"
-                  className="mb-2 text-left font-medium !text-light-blue-500"
-                >
-                  Last Name
-                </Typography>
-                <Input
-                  color="blue"
-                  size="lg"
-                  placeholder="Last Name"
-                  name="last-name"
-                  className="focus:border-t-light-blue-500"
-                  containerProps={{
-                    className: "!min-w-full",
-                  }}
-                  labelProps={{
-                    className: "hidden",
-                  }}
-                />
-              </div>
+            <div>
+              <Typography
+                variant="small"
+                className="mb-2 text-left font-medium !text-light-blue-500"
+              >
+                Your Name
+              </Typography>
+              <Input
+                color="blue"
+                size="lg"
+                placeholder="User Name"
+                name="name"
+                className="focus:border-t-light-blue-500"
+                containerProps={{
+                  className: "!min-w-full",
+                }}
+                labelProps={{
+                  className: "hidden",
+                }}
+              />
             </div>
             <div>
               <Typography
