@@ -1,7 +1,5 @@
 # Vitaminek
 
-# All-deliverables-For-masterpiece
-
 ## Project Brief
 Vitaminek: Your Ultimate Health Companion
 
